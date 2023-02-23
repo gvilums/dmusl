@@ -26,18 +26,20 @@ char *__shm_mapname(const char *name, char *buf)
 
 int shm_open(const char *name, int flag, mode_t mode)
 {
-	int cs;
-	char buf[NAME_MAX+10];
-	if (!(name = __shm_mapname(name, buf))) return -1;
-	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
-	int fd = open(name, flag|O_NOFOLLOW|O_CLOEXEC|O_NONBLOCK, mode);
-	pthread_setcancelstate(cs, 0);
-	return fd;
+	return -1;
+	// int cs;
+	// char buf[NAME_MAX+10];
+	// if (!(name = __shm_mapname(name, buf))) return -1;
+	// pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
+	// int fd = open(name, flag|O_NOFOLLOW|O_CLOEXEC|O_NONBLOCK, mode);
+	// pthread_setcancelstate(cs, 0);
+	// return fd;
 }
 
 int shm_unlink(const char *name)
 {
-	char buf[NAME_MAX+10];
-	if (!(name = __shm_mapname(name, buf))) return -1;
-	return unlink(name);
+	return -1;
+	// char buf[NAME_MAX+10];
+	// if (!(name = __shm_mapname(name, buf))) return -1;
+	// return unlink(name);
 }

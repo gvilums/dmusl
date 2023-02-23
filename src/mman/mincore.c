@@ -4,5 +4,7 @@
 
 int mincore (void *addr, size_t len, unsigned char *vec)
 {
-	return syscall(SYS_mincore, addr, len, vec);
+	// TODO: write dummy value to all elements in vec
+	return 0;
+	// return syscall(SYS_mincore, addr, len, vec);
 }

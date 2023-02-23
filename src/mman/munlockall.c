@@ -3,5 +3,6 @@
 
 int munlockall(void)
 {
-	return syscall(SYS_munlockall);
+	return 0;
+	// return syscall(SYS_munlockall);
 }
