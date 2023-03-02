@@ -8,6 +8,8 @@
 
 _Noreturn void abort(void)
 {
+	_Exit(127);
+	// the rest should never be reached
 	raise(SIGABRT);
 
 	/* If there was a SIGABRT handler installed and it returned, or if

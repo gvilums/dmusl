@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <limits.h>
 #include "syscall.h"
+#include "libc.h"
 
 static void dummy(void) { }
 weak_alias(dummy, __vm_wait);
@@ -38,10 +39,10 @@ void *__mmap_real(void *start, size_t len, int prot, int flags, int fd, off_t of
 
 
 #ifndef PAGE_SIZE
-#define PAGE_SIZE 4096
+#define PAGE_SIZE (libc.page_size)
 #endif
-
 #define PAGE_ALIGN(x) (((x - 1) | (PAGE_SIZE - 1)) + 1)
+
 
 void *__mmap(void *start, size_t len, int prot, int flags, int fd, off_t off) {
 	extern char _end;
