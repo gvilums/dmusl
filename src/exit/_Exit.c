@@ -23,7 +23,7 @@ _Noreturn void _Exit(int ec)
 	__asm__ volatile(
 		"ldr c0, %w[returnPair] \n"
 		"ldpbr c29, [c0] \n"
-		: : "r" (&__returnPair) : "c0", "c29"
+		: : [returnPair] "r" (&__returnPair) : "c0", "c29"
 	);
 	// __asm__ volatile(
 	// 	// "ldr c0, %w[] \n"
