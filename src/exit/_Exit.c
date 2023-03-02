@@ -7,13 +7,13 @@ typedef struct{
   void* address;
 } ioStruct;
 
-static ioStruct* const inputRoot;
-static ioStruct* outputRoot;
-static const unsigned int inputNumber;
-static unsigned int outputNumber = 0;
-static const unsigned int maxOutputNumber;
+ioStruct* const __inputRoot;
+ioStruct* __outputRoot;
+const unsigned int __inputNumber;
+unsigned int __outputNumber = 0;
+const unsigned int __maxOutputNumber;
 
-static const void * __capability const returnPair;
+const void * __capability const __returnPair;
 
 
 _Noreturn void _Exit(int ec)
@@ -23,7 +23,7 @@ _Noreturn void _Exit(int ec)
 	__asm__ volatile(
     // "ldr c0, %w[] \n"
 		"ldpbr c29, [%w[returnPair]] \n"
-		: : [returnPair] "r" (returnPair) : "c0", "c29"
+		: : [returnPair] "r" (__returnPair) : "c0", "c29"
 	);
 	__builtin_unreachable();
 }
