@@ -14,10 +14,11 @@ unsigned int __outputNumber = 0;
 const unsigned int __maxOutputNumber;
 
 const void * __capability const __returnPair;
-
+int __exitCode;
 
 _Noreturn void _Exit(int ec)
 {
+	__exitCode = ec;
 	__asm__ volatile(
 		"ldr c0, [%0] \n"
 		"ldpbr c29, [c0] \n"
