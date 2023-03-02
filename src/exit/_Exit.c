@@ -20,15 +20,15 @@ _Noreturn void _Exit(int ec)
 {
 	// __syscall(SYS_exit_group, ec);
 	// for (;;) __syscall(SYS_exit, ec);
-	__asm__ volatile(
-		"ldr c0, %w[returnPair] \n"
-		"ldpbr c29, [c0] \n"
-		: : [returnPair] "r" (&__returnPair) : "c0", "c29"
-	);
 	// __asm__ volatile(
-	// 	// "ldr c0, %w[] \n"
-	// 	"ldpbr c29, [%w[returnPair]] \n"
-	// 	: : [returnPair] "r" (__returnPair) : "c0", "c29"
+	// 	"ldr c0, %w[returnPair] \n"
+	// 	"ldpbr c29, [c0] \n"
+	// 	: : [returnPair] "r" (&__returnPair) : "c0", "c29"
 	// );
+	__asm__ volatile(
+		// "ldr c0, %w[] \n"
+		"ldpbr c29, [%w[returnPair]] \n"
+		: : [returnPair] "m" (__returnPair) : "c0", "c29"
+	);
 	__builtin_unreachable();
 }
