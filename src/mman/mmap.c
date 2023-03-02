@@ -36,6 +36,11 @@ void *__mmap_real(void *start, size_t len, int prot, int flags, int fd, off_t of
 	return (void *)__syscall_ret(ret);
 }
 
+
+#ifndef PAGE_SIZE
+#define PAGE_SIZE 4096
+#endif
+
 #define PAGE_ALIGN(x) (((x - 1) | (PAGE_SIZE - 1)) + 1)
 
 void *__mmap(void *start, size_t len, int prot, int flags, int fd, off_t off) {

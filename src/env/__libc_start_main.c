@@ -17,43 +17,58 @@ weak_alias(dummy1, __init_ssp);
 
 #define AUX_CNT 38
 
+void __init_tls(size_t *auxv) {}
+
+// uintptr_t __brk_val;
+
 #ifdef __GNUC__
 __attribute__((__noinline__))
 #endif
 void __init_libc(char **envp, char *pn)
 {
-	size_t i, *auxv, aux[AUX_CNT] = { 0 };
-	__environ = envp;
-	for (i=0; envp[i]; i++);
-	libc.auxv = auxv = (void *)(envp+i+1);
-	for (i=0; auxv[i]; i+=2) if (auxv[i]<AUX_CNT) aux[auxv[i]] = auxv[i+1];
-	__hwcap = aux[AT_HWCAP];
-	if (aux[AT_SYSINFO]) __sysinfo = aux[AT_SYSINFO];
-	libc.page_size = aux[AT_PAGESZ];
+	// size_t i, *auxv, aux[AUX_CNT] = { 0 };
+	// __environ = envp;
+	__environ = NULL;
+	// for (i=0; envp[i]; i++);
+	// libc.auxv = auxv = (void *)(envp+i+1);
+	libc.auxv = NULL;
+	// for (i=0; auxv[i]; i+=2) if (auxv[i]<AUX_CNT) aux[auxv[i]] = auxv[i+1];
+	// __hwcap = aux[AT_HWCAP];
+	__hwcap = 0;
+	// if (aux[AT_SYSINFO]) __sysinfo = aux[AT_SYSINFO];
+	// libc.page_size = aux[AT_PAGESZ];
+	libc.page_size = 4096; // hard-code for now
 
-	if (!pn) pn = (void*)aux[AT_EXECFN];
+	// if (!pn) pn = (void*)aux[AT_EXECFN];
 	if (!pn) pn = "";
 	__progname = __progname_full = pn;
-	for (i=0; pn[i]; i++) if (pn[i]=='/') __progname = pn+i+1;
 
-	__init_tls(aux);
-	__init_ssp((void *)aux[AT_RANDOM]);
+	for (size_t i=0; pn[i]; i++) if (pn[i]=='/') __progname = pn+i+1;
 
-	if (aux[AT_UID]==aux[AT_EUID] && aux[AT_GID]==aux[AT_EGID]
-		&& !aux[AT_SECURE]) return;
+	__init_tls(NULL);
+	// __init_ssp((void *)aux[AT_RANDOM]);
+	__init_ssp(NULL);
 
-	struct pollfd pfd[3] = { {.fd=0}, {.fd=1}, {.fd=2} };
-	int r =
-#ifdef SYS_poll
-	__syscall(SYS_poll, pfd, 3, 0);
-#else
-	__syscall(SYS_ppoll, pfd, 3, &(struct timespec){0}, 0, _NSIG/8);
-#endif
-	if (r<0) a_crash();
-	for (i=0; i<3; i++) if (pfd[i].revents&POLLNVAL)
-		if (__sys_open("/dev/null", O_RDWR)<0)
-			a_crash();
-	libc.secure = 1;
+	// __brk_val = __syscall(SYS_brk, 0);
+	// __brk_val = __syscall(SYS_brk, __brk_val + (1 << 30));
+
+	return;
+
+// 	if (aux[AT_UID]==aux[AT_EUID] && aux[AT_GID]==aux[AT_EGID]
+// 		&& !aux[AT_SECURE]) return;
+
+// 	struct pollfd pfd[3] = { {.fd=0}, {.fd=1}, {.fd=2} };
+// 	int r =
+// #ifdef SYS_poll
+// 	__syscall(SYS_poll, pfd, 3, 0);
+// #else
+// 	__syscall(SYS_ppoll, pfd, 3, &(struct timespec){0}, 0, _NSIG/8);
+// #endif
+// 	if (r<0) a_crash();
+// 	for (i=0; i<3; i++) if (pfd[i].revents&POLLNVAL)
+// 		if (__sys_open("/dev/null", O_RDWR)<0)
+// 			a_crash();
+// 	libc.secure = 1;
 }
 
 static void libc_start_init(void)
@@ -72,12 +87,13 @@ static lsm2_fn libc_start_main_stage2;
 int __libc_start_main(int (*main)(int,char **,char **), int argc, char **argv,
 	void (*init_dummy)(), void(*fini_dummy)(), void(*ldso_dummy)())
 {
-	char **envp = argv+argc+1;
+	// char **envp = argv+argc+1;
 
 	/* External linkage, and explicit noinline attribute if available,
 	 * are used to prevent the stack frame used during init from
 	 * persisting for the entire process lifetime. */
-	__init_libc(envp, argv[0]);
+	// __init_libc(envp, argv[0]);
+	__init_libc(NULL, NULL);
 
 	/* Barrier against hoisting application code or anything using ssp
 	 * or thread pointer prior to its initialization above. */
@@ -88,10 +104,11 @@ int __libc_start_main(int (*main)(int,char **,char **), int argc, char **argv,
 
 static int libc_start_main_stage2(int (*main)(int,char **,char **), int argc, char **argv)
 {
-	char **envp = argv+argc+1;
+	// char **envp = argv+argc+1;
 	__libc_start_init();
 
 	/* Pass control to the application */
-	exit(main(argc, argv, envp));
+	// exit(main(argc, argv, envp));
+	exit(main(0, NULL, NULL));
 	return 0;
 }

@@ -45,9 +45,11 @@
 static inline uint64_t get_random_secret()
 {
 	uint64_t secret = (uintptr_t)&secret * 1103515245;
-	for (size_t i=0; libc.auxv[i]; i+=2)
-		if (libc.auxv[i]==AT_RANDOM)
-			memcpy(&secret, (char *)libc.auxv[i+1]+8, sizeof secret);
+	if (libc.auxv) {
+		for (size_t i=0; libc.auxv[i]; i+=2)
+			if (libc.auxv[i]==AT_RANDOM)
+				memcpy(&secret, (char *)libc.auxv[i+1]+8, sizeof secret);
+	}
 	return secret;
 }
 
